@@ -1,17 +1,145 @@
+Ledger-Driven POS Billing System
 
-# Run and deploy your AI Studio app
+Designed for correctness under concurrency, not just functionality.
 
-This contains everything you need to run your app locally.
+🧠 Overview
 
-View your app in AI Studio: https://ai.studio/apps/3e02497e-dfeb-4106-949c-10f6c1d15ded
+This project is a production-grade POS (Point of Sale) billing backend built using FastAPI and PostgreSQL, designed to handle real-world retail challenges such as:
 
-## Run Locally
+Concurrent billing across multiple terminals
+Strict stock consistency (no negative inventory)
+GST-compliant invoicing (India-specific)
+Auditability and financial traceability
 
-**Prerequisites:**  Node.js
+Unlike typical CRUD-based systems, this backend focuses on transactional correctness, data integrity, and system reliability.
 
+🚀 Key Features
+🔒 Concurrency-Safe Billing
+Row-level locking (SELECT ... FOR UPDATE)
+Deterministic lock ordering
+Atomic transactions (commit/rollback)
+📦 Ledger-Based Inventory
+Stock Movements (ledger) → source of truth
+Stock Snapshot → fast reads + locking
+Fully replayable inventory state
+💳 Transactional Billing Engine
+Immutable orders
+Idempotent requests (retry-safe)
+No stock mutation outside billing
+🧾 GST-Compliant Invoicing (India)
+CGST / SGST / IGST calculation
+Per-item tax breakdown
+Invoice generation with totals
+📊 Reporting APIs
+Daily sales aggregation
+Top-selling products
+GST tax summaries
+🧾 Audit Logging
+All critical operations logged
+Traceable financial events
+🏗️ Architecture
+Client (POS UI)
+   ↓
+FastAPI (API Layer)
+   ↓
+Services Layer
+   ├── Billing Service
+   ├── Stock Engine
+   ├── GST Engine
+   ├── Reporting Service
+   ↓
+PostgreSQL
+   ├── products
+   ├── stock_snapshot
+   ├── stock_movements
+   ├── orders
+   ├── order_items
+   ├── invoices
+   ├── invoice_items
+   ├── idempotency_keys
+   └── audit_logs
+📁 Project Structure
+app/
+ ├── main.py
+ ├── core/
+ ├── db/
+ ├── models/
+ ├── schemas/
+ ├── services/
+ └── api/
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+init_db.py
+requirements.txt
+Dockerfile
+⚙️ Tech Stack
+Backend: FastAPI
+Database: PostgreSQL
+ORM: SQLAlchemy
+Containerization: Docker
+🛠️ Setup Instructions
+1. Clone Repository
+git clone https://github.com/your-username/ledger-driven-pos.git
+cd ledger-driven-pos
+2. Start PostgreSQL (Docker)
+docker run -d -p 5432:5432 \
+-e POSTGRES_PASSWORD=postgres \
+-e POSTGRES_DB=pos postgres
+3. Install Dependencies
+pip install -r requirements.txt
+4. Initialize Database
+python init_db.py
+5. Run Server
+uvicorn app.main:app --reload
+6. Open API Docs
+http://127.0.0.1:8000/docs
+🧪 Example Workflow
+1. Create Product
+POST /products
+2. Add Stock
+POST /stock/add
+3. Create Bill
+POST /bill
+4. Fetch Invoice / Order
+GET /orders/{id}
+5. View Reports
+GET /reports/sales/daily
+GET /reports/products/top
+GET /reports/gst
+🔒 Core Design Principles
+No negative stock under any condition
+Orders are immutable after creation
+Stock changes only via ledger entries
+All critical operations are transactional
+Cart does not mutate inventory
+Concurrency handled explicitly
+⚠️ Known Constraints
+Single-node deployment (can be extended)
+No authentication layer (can be added)
+Optimized for correctness over raw throughput
+🚀 Future Improvements
+PDF invoice generation
+Multi-store / warehouse support
+Role-based access (admin/cashier)
+Event-driven architecture (Kafka)
+Offline POS sync
+🧠 Why This Project?
+
+This project is built to demonstrate:
+
+Real-world backend system design
+Concurrency-safe transaction handling
+Financial-grade data integrity
+Scalable architecture thinking
+📜 License
+
+MIT License
+
+👨‍💻 Author
+
+Built with a focus on systems engineering, not just API development.
+
+If you want, next I can:
+
+add architecture diagrams (visual)
+include ER diagrams
+or optimize this README for recruiter visibility 🔥
