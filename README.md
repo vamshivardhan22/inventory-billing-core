@@ -159,23 +159,6 @@ Real-world backend system design
 Concurrency-safe transaction handling
 Financial-grade data integrity
 Scalable architecture thinking
-📜 License
 
-MIT License
-
-👨‍💻 Author
-
-Built with a focus on systems engineering, not just API development.
-
-
----
-
-# 🔥 What Changed (Why this is better)
-
-- Proper spacing → readable  
-- Sections clearly separated  
-- No “wall of text”  
-- Clean code blocks  
-- GitHub-friendly formatting  
 
 
