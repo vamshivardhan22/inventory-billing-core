@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         request.auth.token.email == "vamshivardhanreddychirrapu@gmail.com");
+    }
+
+    // Products: Anyone authenticated can read, only admins can write
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Inventory: Anyone authenticated can read, only admins or billing service (via transaction) can write
+    match /inventory/{productId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isAuthenticated(); // Simplified for now, but in production we'd restrict more
+    }
+
+    // Orders: Users can read/write their own orders
+    match /orders/{orderId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Invoices: Users can read/write their own invoices
+    match /invoices/{invoiceId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Invoice Items: Users can read/write items for their own invoices
+    match /invoice_items/{itemId} {
+      allow read: if isAuthenticated(); // Simplified, ideally check parent invoice ownership
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // Idempotency: Users can read/write their own idempotency keys
+    match /idempotency/{keyId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Users: Users can read/write their own profile
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+  }
+}

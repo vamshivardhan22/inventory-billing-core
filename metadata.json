@@ -1,0 +1,5 @@
+{
+  "name": "GST Billing Engine",
+  "description": "A GST-compliant retail billing engine with inventory management, invoicing, and real-time reporting.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,109 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A retail product with GST information.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "gst_rate": { "type": "number", "description": "GST rate in percentage (e.g., 18)" },
+        "hsn_code": { "type": "string" }
+      },
+      "required": ["name", "price", "gst_rate"]
+    },
+    "Inventory": {
+      "title": "Inventory",
+      "description": "Stock snapshot for a product.",
+      "type": "object",
+      "properties": {
+        "product_id": { "type": "string" },
+        "quantity": { "type": "number" },
+        "last_updated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["product_id", "quantity"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "A customer order.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "total_amount": { "type": "number" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "uid": { "type": "string" }
+      },
+      "required": ["total_amount", "created_at", "uid"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "A GST-compliant invoice.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "order_id": { "type": "string" },
+        "invoice_number": { "type": "string" },
+        "total_base": { "type": "number" },
+        "total_tax": { "type": "number" },
+        "grand_total": { "type": "number" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "uid": { "type": "string" }
+      },
+      "required": ["order_id", "invoice_number", "total_base", "total_tax", "grand_total", "created_at", "uid"]
+    },
+    "InvoiceItem": {
+      "title": "Invoice Item",
+      "description": "An item within an invoice.",
+      "type": "object",
+      "properties": {
+        "invoice_id": { "type": "string" },
+        "product_id": { "type": "string" },
+        "qty": { "type": "number" },
+        "price": { "type": "number" },
+        "cgst": { "type": "number" },
+        "sgst": { "type": "number" },
+        "igst": { "type": "number" },
+        "total": { "type": "number" }
+      },
+      "required": ["invoice_id", "product_id", "qty", "price", "total"]
+    },
+    "Idempotency": {
+      "title": "Idempotency",
+      "description": "Stores idempotency keys to prevent duplicate operations.",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "response": { "type": "object" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["key", "response", "created_at"]
+    }
+  },
+  "firestore": {
+    "products": {
+      "schema": "Product",
+      "description": "Collection of retail products."
+    },
+    "inventory": {
+      "schema": "Inventory",
+      "description": "Collection of stock snapshots."
+    },
+    "orders": {
+      "schema": "Order",
+      "description": "Collection of customer orders."
+    },
+    "invoices": {
+      "schema": "Invoice",
+      "description": "Collection of GST invoices."
+    },
+    "invoice_items": {
+      "schema": "InvoiceItem",
+      "description": "Collection of items for each invoice."
+    },
+    "idempotency": {
+      "schema": "Idempotency",
+      "description": "Collection of idempotency keys."
+    }
+  }
+}
